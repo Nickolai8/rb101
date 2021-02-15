@@ -1,0 +1,45 @@
+1)
+
+START
+  
+  PRINT ()
+  PRINT ("Number 1: ")
+  SET num1 GET 
+  PRINT ("Number 2: ")
+  SET num2 GET
+  
+  IF num1 == integer AND num2 == integer
+    SET result = num1 + num2
+    PRINT("{num1} + {num2} = {result}")
+  ELSE
+    PRINT ("Please make sure both numbers are integers")
+
+END
+
+2)
+
+START
+
+  SET string_array = [bunch of strings]
+  SET final_string = ""
+
+  FOR each string in string_array
+    final_string + current string in string_array + " "
+
+END
+
+3)
+
+START
+
+  SET array_of_ints = [bunch of ints]
+  SET every_other_int = []
+  SET incrementor
+
+  FOR each int in array_of_ints
+      IF incrementor % 2 == 0
+        every_other_int append array_of_ints [incrementor]
+      ELSE
+        next iteration
+
+END
