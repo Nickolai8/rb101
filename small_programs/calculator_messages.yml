@@ -1,0 +1,42 @@
+# FIXME the #{} string interpolations were working at first, then some werent,
+# now all arent (without anything changing as well. This is odd)
+
+lang: "English/Espanol?"
+
+english:
+  welcome: "Welcome to Calculator! Enter your name:"
+  name_greeting: "Hi there, #{name}"
+  valid_name: "Make sure to enter a valid name."
+
+  first_num: "First number?(zero not allowed): "
+  second_num: "Second number?(zero not allowed): "
+  operator_error: "Please choose a valid operator"
+
+  divide_by_zero: "You cannot divide by zero. Try again."
+  invalid_op: "Invalid operation. Try again."
+
+  operator_in_action: "#{operation_to_message(operator)} the two numbers...."
+  result_is: "Your result is #{result}"
+  go_again: "Would you like to go again? [yes/no]"
+
+
+
+
+
+
+
+espanol:
+  welcome: "Bienvenido a la Calculadora! Entras su nombre:"
+  name_greeting: "Hola, #{name}"
+  valid_name: "Te aseguras entras un nombre valido."
+
+  first_num: "Primero numero?(cero no permitido): "
+  second_num: "Segundo numero?(cero no permitido): "
+  operator_error: "Eligestes un operador valido, por favor"
+
+  divide_by_zero: "No se puede dividir por cero. Intentar otra vez."
+  invalid_op: "Operacion invalida. Intrentar otra vez."
+
+  operator_in_action: "#{operation_to_message(operator)} los dos numeros...." #fix for spanish verb
+  result_is: "Su resultado es #{result}"
+  go_again: "Te gustaria ir de nuevo [si/no]"
