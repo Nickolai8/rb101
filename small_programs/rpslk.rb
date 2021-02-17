@@ -81,6 +81,17 @@ def pick_winner(user, computer)
   end
 end
 
+def declare_winner(user, computer)
+  prompt  "FINAL SCORE Player: #{user} Computer: #{computer}"
+  if user > computer
+    prompt "Player wins."
+  elsif user < computer
+    prompt "Computer wins"
+  else
+    prompt "It's a tie."
+  end
+end
+
 # Greeting
 introduction = <<-MSG
 "Welcome to Rock Paper Scissors Lizard Spock!
@@ -89,25 +100,35 @@ MSG
 prompt(introduction)
 keep_playing = gets.chomp.chars.first
 
-# Game loop
+# Keep playing loop
 loop do
   break unless keep_playing == 'y'
 
-  # Sets user choice
-  user_choice = nil
+  # Game loop
   loop do
-    prompt "Rock(r), paper(p), scissors(s), lizard(l), or Spock(k)?"
-    user_choice = gets.chomp.downcase
-    break if possible_choices.include?(user_choice) ||
-             abbreviated_choices.include?(user_choice)
-    prompt "Chose one of the given answers:"
+    break if ($user_points >= 5) || ($computer_points >= 5)
+
+    # Sets user choice
+    user_choice = nil
+    loop do
+      prompt "Rock(r), paper(p), scissors(s), lizard(l), or Spock(k)?"
+      user_choice = gets.chomp.downcase
+      break if possible_choices.include?(user_choice) ||
+               abbreviated_choices.include?(user_choice)
+      prompt "Chose one of the given answers:"
+    end
+
+    # Sets computer
+    computer_choice = possible_choices.sample
+
+    # Find out the winner
+    pick_winner(user_choice, computer_choice)
   end
 
-  # Sets computer
-  computer_choice = possible_choices.sample
-
-  # Find out the winner
-  pick_winner(user_choice, computer_choice)
+  # Declare winner of game, reset points
+  declare_winner($user_points, $computer_points)
+  $user_points = 0
+  $computer_points = 0
 
   # Ask if continue
   loop do
@@ -118,12 +139,4 @@ loop do
   end
 end
 
-# Final Score and winner
-prompt "Final score. Player: #{$user_points} Computer: #{$computer_points}"
-if $user_points > $computer_points
-  prompt "Player wins."
-elsif $user_points < $computer_points
-  prompt "Computer wins"
-else
-  prompt "It's a tie."
-end
+prompt("Have a nice day.")
