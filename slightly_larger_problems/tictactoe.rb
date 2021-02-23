@@ -114,6 +114,8 @@ display(board)
 winner = false
 tie = false
 continue = 'y'
+user_win = 0
+comp_win = 0
 
 # loop start
 loop do
@@ -127,12 +129,16 @@ loop do
   prompt "User marks..."
   display(board)
 
+  # check if winner (first)
+  winner = winner?(board)
+  tie = tie?(board) unless winner == true
+
   # computer mark square
   prompt "Computer marks..."
   computer_turn(board)
   display(board)
 
-  # check if winner
+  # check if winner (second)
   winner = winner?(board)
   tie = tie?(board) unless winner == true
 
@@ -140,7 +146,10 @@ loop do
   if winner
     display_winner(winner)
     continue = continue?
+    comp_win += 1 if winner == 'computer'
+    user_win += 1 if winner == 'user'
   end
+
   # if tie, display tie, then ask if play again (no = break loop)
   if tie
     display_tie
@@ -148,5 +157,5 @@ loop do
   end
 
   # loop end
-  break if continue == 'n'
+  break if continue == 'n' || comp_win == 5 || user_win == 5
 end
