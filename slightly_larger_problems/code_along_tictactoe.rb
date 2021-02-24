@@ -71,16 +71,13 @@ def detect_winner(brd)
       return 'Computer'
     end
   end
-  # brd.values_at(line[0], line[1], line[2]).count (COMPUTER_MARKER) == 3
   nil
 end
 
-# outer loop
 loop do
   board = initialize_board
   display_board(board)
 
-  # inner loop
   loop do
     display_board(board)
 
