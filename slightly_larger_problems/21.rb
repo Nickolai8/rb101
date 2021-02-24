@@ -1,5 +1,5 @@
 require 'pry'
-card_values = %w(2 3 4 5 6 7 8 9 10 Jack Queen King Ace)
+card_values = %w(Jack Queen King Ace Ace Ace Ace Ace Ace Ace Ace Ace Ace Ace Ace Ace)
 suits = %w(Hearts Diamonds Spades Clubs)
 main_deck = []
 discard_deck = []
@@ -28,8 +28,7 @@ def visible_cards(player, dealer)
 end
 
 # player hits
-def player_hit!(player, dealer, deck, player_values)
-  visible_cards(player, dealer)
+def player_hit!(player, deck, player_values)
   new_card = deck.shift
   player << new_card
   player_values << new_card.split.first
@@ -48,42 +47,71 @@ def player_hit?
   hit
 end
 
-def dealer_hit!(player, dealer, deck, dealer_values)
-  visible_cards(player, dealer)
+# dealer hits
+def dealer_hit!(dealer, deck, dealer_values)
   new_card = deck.shift
   dealer << new_card
   dealer_values << new_card.split.first
 end
 
-def dealer_hit?(points)
-  points < 17
+# dealer should hit?
+def dealer_hit?(dealer, player)
+  (dealer < 17) || (player > dealer) 
 end
 
+# points initialize from starting hands
 def starting_points(cards_values)
   points = cards_values.map do |el|
     if %w(Jack Queen King).include?(el) then 10
-    elsif el == 'Ace' then 11 # need to fix, pts isnt known yet
+    elsif el == 'Ace' && cards_values.count('Ace') != 2 then 11 
     elsif el == 'Ace' then 1
     else el.to_i end
   end
   points.sum
 end
 
+# determines points in hand
 def determine_points(cards_values, points)
   new_card = cards_values[-1]
   if %w(Jack Queen King).include?(new_card) then 10
-  elsif new_card == 'Ace' && points < 11 then 11 # need to fix, pts isnt known yet
+  elsif new_card == 'Ace' && points < 11 then 11 
   elsif new_card == 'Ace' then 1
   else new_card.to_i end
 end
 
-def update_points(cards_values, points)
+# updates points if there are any aces
+# def update_points(cards_values, points)
+#   subtract = 0
+#   cards_values.each do |elem|
+#     subtract += 1 if elem == 'Ace'
+#     break if points + (subtract - 10) < 22
+#   end
+#   subtract *= -10
+# end
+
+# update points for hands with aces above 21
+def update_points(card_values, points)
   subtract = 0
-  cards_values.each do |el|
-    subtract += 1 if el == 'Ace'
-    break if points + (substract - 10) < 22
+  if points
+    subtract -= 10
+    card_values
   end
-  subtract *= -10
+
+  subtract
+  
+  
+  
+  # aces = card_values.select {|elem| elem == 'Ace'}
+  # not_aces = card_values.reject {|elem| elem == 'Ace'}
+  # subtract = 0
+  # loop do
+  #   if (points > 21) && (aces.size > 1)
+  #     subtract -= 10
+  #   end
+  #   aces.pop
+  #   break if aces.size <= 0
+  # end
+  subtract
 end
 
 # create deck, sorts deck
@@ -96,24 +124,25 @@ dealer_hand << main_deck.shift(2)
 player_hand.flatten!
 dealer_hand.flatten!
 
-
-# extracts cards worth
+# extracts cards in hands worths
 player_cards_values = player_hand.map { |el| el.split.first }
 dealer_cards_values = dealer_hand.map { |el| el.split.first }
 
-# initialize starting points
+# initialize beginning points
 player_points = starting_points(player_cards_values)
 dealer_points = starting_points(dealer_cards_values)
 
+# show visible cards at start
 visible_cards(player_hand, dealer_hand)
 
 # player turn
 loop do 
-  if player_points <= 20 && player_hit? 
-    player_hit!(player_hand, dealer_hand, main_deck, player_cards_values)
+  break unless player_points < 21
+  if player_hit? 
+    player_hit!(player_hand, main_deck, player_cards_values)
     visible_cards(player_hand, dealer_hand)
     player_points += determine_points(player_cards_values, player_points)
-
+    player_points += update_points(player_cards_values, player_points)
   else
     break
   end
@@ -121,21 +150,34 @@ end
 
 # computer turn
 loop do
-  if player_points < 21 && dealer_hit?(dealer_points) 
+  break if player_points == 21 && player_hand.size == 2
+  if player_points < 22 && dealer_hit?(dealer_points, player_points) 
     p "dealer does hit"
-    dealer_hit!(player_hand, dealer_hand, main_deck, dealer_cards_values)
+    dealer_hit!(dealer_hand, main_deck, dealer_cards_values)
     dealer_points += determine_points(dealer_cards_values, dealer_points)
+    dealer_points += update_points(dealer_cards_values, dealer_points)
   else
     break
   end
 end
 
+
+
+
+
+
+
+
+
+
+
+
 # end game display
 visible_cards(player_hand, dealer_hand)
 puts "Player points: #{player_points}"
-puts "Player card values: #{player_cards_values}"
+puts "Player cards: #{player_hand}"
 puts "Dealer points: #{dealer_points}"
-puts "Dealer card values: #{dealer_cards_values}"
+puts "Dealer cards: #{dealer_hand}"
 
 
 
