@@ -27,40 +27,39 @@ def visible_cards(player, dealer)
   puts "You have: #{player.join(", ")}\n\n"
 end
 
-# player turn
+# player hits
 def player_hit!(player, dealer, deck, player_values)
-  loop do
   visible_cards(player, dealer)
-    puts "Player turn. Hit, or stay?"
-    player_hit = gets.chomp.downcase
-    break if player_hit == 'stay'
-    if player_hit == 'hit'
-      new_card = deck.shift
-      player << new_card
-      player_values << new_card.split.first
-    else
-      puts "Invalid choice."
-    end
-  end
+  new_card = deck.shift
+  player << new_card
+  player_values << new_card.split.first
 end
 
-# def player_hit!(player, dealer, deck, player_values)
-#   new_card = deck.shift
-#   player << new_card
-#   player_values << new_card.split.first
-# end
+# player wants to hit?
+def player_hit?
+  hit = nil
+  loop do 
+    puts "Player turn. Hit, or stay?"
+    player_hit = gets.chomp.downcase
+    hit = false if player_hit == 'stay' 
+    hit = true if player_hit == 'hit'
+    break if player_hit == 'stay' || player_hit == 'hit'
+  end
+  hit
+end
 
-# def player_hit?
+def dealer_hit!(player, dealer, deck, dealer_values)
+  visible_cards(player, dealer)
+  new_card = deck.shift
+  dealer << new_card
+  dealer_values << new_card.split.first
+end
 
-# end
+def dealer_hit?(points)
+  points < 17
+end
 
-# def update_points(points)
-
-# end
-
-# determines points in hand FIXME
-def determine_points(cards_values) # use current pts as an argument
-  p cards_values
+def starting_points(cards_values)
   points = cards_values.map do |el|
     if %w(Jack Queen King).include?(el) then 10
     elsif el == 'Ace' then 11 # need to fix, pts isnt known yet
@@ -68,6 +67,23 @@ def determine_points(cards_values) # use current pts as an argument
     else el.to_i end
   end
   points.sum
+end
+
+def determine_points(cards_values, points)
+  new_card = cards_values[-1]
+  if %w(Jack Queen King).include?(new_card) then 10
+  elsif new_card == 'Ace' && points < 11 then 11 # need to fix, pts isnt known yet
+  elsif new_card == 'Ace' then 1
+  else new_card.to_i end
+end
+
+def update_points(cards_values, points)
+  subtract = 0
+  cards_values.each do |el|
+    subtract += 1 if el == 'Ace'
+    break if points + (substract - 10) < 22
+  end
+  subtract *= -10
 end
 
 # create deck, sorts deck
@@ -85,19 +101,41 @@ dealer_hand.flatten!
 player_cards_values = player_hand.map { |el| el.split.first }
 dealer_cards_values = dealer_hand.map { |el| el.split.first }
 
+# initialize starting points
+player_points = starting_points(player_cards_values)
+dealer_points = starting_points(dealer_cards_values)
+
 visible_cards(player_hand, dealer_hand)
 
-# asks player if hit
-player_hit!(player_hand, dealer_hand, main_deck, player_cards_values)
+# player turn
+loop do 
+  if player_points <= 20 && player_hit? 
+    player_hit!(player_hand, dealer_hand, main_deck, player_cards_values)
+    visible_cards(player_hand, dealer_hand)
+    player_points += determine_points(player_cards_values, player_points)
 
+  else
+    break
+  end
+end
 
+# computer turn
+loop do
+  if player_points < 21 && dealer_hit?(dealer_points) 
+    p "dealer does hit"
+    dealer_hit!(player_hand, dealer_hand, main_deck, dealer_cards_values)
+    dealer_points += determine_points(dealer_cards_values, dealer_points)
+  else
+    break
+  end
+end
 
-
-# displays cards
+# end game display
 visible_cards(player_hand, dealer_hand)
-
-puts "Player points: #{determine_points(player_cards_values)}"
+puts "Player points: #{player_points}"
 puts "Player card values: #{player_cards_values}"
+puts "Dealer points: #{dealer_points}"
+puts "Dealer card values: #{dealer_cards_values}"
 
 
 
@@ -108,6 +146,35 @@ puts "Player card values: #{player_cards_values}"
 
 
 
+
+# determines points in hand FIXME
+# def determine_points(cards_values) # use current pts as an argument
+#   points = cards_values.map do |el|
+#     if %w(Jack Queen King).include?(el) then 10
+#     elsif el == 'Ace' then 11 # need to fix, pts isnt known yet
+#     elsif el == 'Ace' then 1
+#     else el.to_i end
+#   end
+#   points.sum
+# end
+
+
+# player turn
+# def player_hit!(player, dealer, deck, player_values)
+#   loop do
+#   visible_cards(player, dealer)
+#     puts "Player turn. Hit, or stay?"
+#     player_hit = gets.chomp.downcase
+#     break if player_hit == 'stay'
+#     if player_hit == 'hit'
+#       new_card = deck.shift
+#       player << new_card
+#       player_values << new_card.split.first
+#     else
+#       puts "Invalid choice."
+#     end
+#   end
+# end
 
 
 
