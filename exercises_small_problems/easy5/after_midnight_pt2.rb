@@ -9,4 +9,3 @@ def before_midnight(str)
   time[0] = time[0] % 24
   (1440 - (time[0] * 60 + time[1])) % 1440
 end
-
