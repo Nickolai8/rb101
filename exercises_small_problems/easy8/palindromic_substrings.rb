@@ -20,4 +20,3 @@ def palindromes(str)
   arr = substrings(str)
   arr.select { |elem| elem == elem.reverse && elem.size > 1 }
 end
-
